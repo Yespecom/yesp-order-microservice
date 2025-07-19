@@ -1,9 +1,8 @@
 require("dotenv").config()
 const express = require("express")
-const cors = require("cors")
+const cors = require("cors") // Import the cors package
 const helmet = require("helmet")
 const rateLimit = require("express-rate-limit")
-
 const { connectMainDB } = require("./config/db")
 const orderRoutes = require("./routes/orderRoutes")
 const errorHandler = require("./middleware/errorHandler")
@@ -13,12 +12,12 @@ const PORT = process.env.PORT || 5005
 
 // Security middleware
 app.use(helmet())
-app.use(
-  cors({
-    origin: process.env.ALLOWED_ORIGINS?.split(",") || ["http://localhost:3000"],
-    credentials: true,
-  }),
-)
+
+// Allow ALL CORS requests
+// WARNING: This is generally NOT recommended for production environments
+// as it can expose your API to potential security risks.
+// For production, always specify allowed origins.
+app.use(cors())
 
 // Rate limiting
 const limiter = rateLimit({
@@ -63,7 +62,6 @@ const startServer = async () => {
   try {
     // Connect to main database
     await connectMainDB()
-
     app.listen(PORT, () => {
       console.log(`🚀 YESP Order Microservice running on port ${PORT}`)
       console.log(`📊 Health check: http://localhost:${PORT}/health`)
